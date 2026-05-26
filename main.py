@@ -2,21 +2,20 @@ import imaplib
 import email
 import time
 import os
-import telegram
+import requests
 
 GMAIL_USER  = os.environ["GMAIL_USER"]
 GMAIL_PASS  = os.environ["GMAIL_APP_PASS"]
 TG_TOKEN    = os.environ["TG_TOKEN"]
 TG_CHAT_ID  = os.environ["TG_CHAT_ID"]
 
-bot = telegram.Bot(token=TG_TOKEN)
-
 def send_telegram(msg):
-    bot.send_message(chat_id=TG_CHAT_ID, text=msg)
+    url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
+    requests.post(url, data={"chat_id": TG_CHAT_ID, "text": msg})
 
 def format_message(raw):
     try:
-        parts    = dict(p.strip().split(": ", 1) for p in raw.split("|") if ": " in p)
+        parts     = dict(p.strip().split(": ", 1) for p in raw.split("|") if ": " in p)
         direction = raw.split("|")[0].strip()
         symbol    = raw.split("|")[1].strip()
         entry     = parts.get("Entry", "?")
